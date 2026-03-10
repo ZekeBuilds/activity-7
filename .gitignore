@@ -4,8 +4,11 @@ docs/
 # Temporary copy-paste notes
 _temp/
 
-# Claude Code local settings
+Part 1 Screenshots/
+
+# Claude
 .claude/
+CLAUDE.md
 
 # OS files
 .DS_Store

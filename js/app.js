@@ -451,10 +451,14 @@ async function addFriend() {
       return
     }
 
-    // Step 3: Insert friendship row
+    // Step 3: Normalize pair so the smaller UUID is always in profile_id,
+    // then insert. This prevents (A,B) and (B,A) from coexisting as separate rows.
+    const canonicalProfileId = currentProfileId < friendId ? currentProfileId : friendId
+    const canonicalFriendId  = currentProfileId < friendId ? friendId : currentProfileId
+
     const { error: insertError } = await db
       .from('friends')
-      .insert({ profile_id: currentProfileId, friend_id: friendId })
+      .insert({ profile_id: canonicalProfileId, friend_id: canonicalFriendId })
 
     if (insertError) {
       if (insertError.code === '23505') {
@@ -475,8 +479,9 @@ async function addFriend() {
 
 /**
  * removeFriend()
- * Looks up the friend by name, then deletes the friendship row(s)
- * in both possible orderings (since canonical direction may vary).
+ * Looks up the friend by name, then deletes the canonical friendship row.
+ * Uses the same LEAST/GREATEST normalization as addFriend so the delete
+ * always targets the one row that actually exists.
  */
 async function removeFriend() {
   if (!currentProfileId) {
@@ -504,21 +509,23 @@ async function removeFriend() {
 
     const friendId = found[0].id
 
-    // Try deleting in both directions — only one will match
-    const { error: e1 } = await db
+    // Normalize pair to match the canonical row stored by addFriend
+    const canonicalProfileId = currentProfileId < friendId ? currentProfileId : friendId
+    const canonicalFriendId  = currentProfileId < friendId ? friendId : currentProfileId
+
+    const { data: deleted, error } = await db
       .from('friends')
       .delete()
-      .eq('profile_id', currentProfileId)
-      .eq('friend_id', friendId)
+      .eq('profile_id', canonicalProfileId)
+      .eq('friend_id', canonicalFriendId)
+      .select()
 
-    const { error: e2 } = await db
-      .from('friends')
-      .delete()
-      .eq('profile_id', friendId)
-      .eq('friend_id', currentProfileId)
+    if (error) throw error
 
-    // If both directions errored, surface the error
-    if (e1 && e2) throw e1
+    if (!deleted || deleted.length === 0) {
+      setStatus(`"${found[0].name}" is not in the friends list.`, true)
+      return
+    }
 
     document.getElementById('input-remove-friend').value = ''
     await selectProfile(currentProfileId)

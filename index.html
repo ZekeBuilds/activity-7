@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SocialNet Manager &mdash; LBYCPG3</title>
+
+  <!-- Google Fonts: Source Serif 4 (headings/quotes) + DM Sans (UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Bootstrap 5.3 CSS via CDN -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  >
+
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  >
+
+  <!-- Custom styles (must come AFTER Bootstrap) -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Supabase JS client via CDN (must load before app.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<!-- ===== APPLICATION HEADER ===== -->
+<header id="app-header" role="banner">
+  <div class="header-inner">
+    <div class="header-brand">
+      <span class="header-icon" aria-hidden="true">
+        <i class="bi bi-people-fill"></i>
+      </span>
+      <div>
+        <h1 id="app-title">SocialNet Manager</h1>
+        <p class="header-sub">LBYCPG3 &middot; Activity 7 &middot; Profile Manager</p>
+      </div>
+    </div>
+    <button id="btn-exit" class="btn-exit" aria-label="Exit application">
+      <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+      <span>Exit</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== MAIN APP WRAPPER ===== -->
+<div id="app-wrapper">
+  <main class="container-fluid" role="main">
+    <div class="row g-3">
+
+      <!-- ============================================================
+           LEFT PANEL: Profile Management
+           ============================================================ -->
+      <div class="col-12 col-md-3">
+        <div class="sn-panel">
+          <h2 class="panel-title">
+            <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
+            Profile Management
+          </h2>
+
+          <!-- Name input: used for both Add and Look Up -->
+          <label for="input-name" class="field-label">Name</label>
+          <div class="input-group input-group-sm mb-2">
+            <input
+              type="text"
+              id="input-name"
+              class="form-control sn-input"
+              placeholder="Enter full name"
+              autocomplete="off"
+              aria-label="Profile name"
+            >
+          </div>
+
+          <!-- Add + Look Up buttons -->
+          <div class="d-flex gap-2 mb-3">
+            <button id="btn-add" class="btn sn-btn sn-btn-primary flex-fill btn-sm">
+              <i class="bi bi-person-plus-fill" aria-hidden="true"></i> Add
+            </button>
+            <button id="btn-lookup" class="btn sn-btn sn-btn-outline flex-fill btn-sm">
+              <i class="bi bi-search" aria-hidden="true"></i> Look Up
+            </button>
+          </div>
+
+          <!-- Delete selected profile -->
+          <button id="btn-delete" class="btn sn-btn sn-btn-danger btn-sm w-100 mb-3">
+            <i class="bi bi-person-x-fill" aria-hidden="true"></i>
+            Delete Selected Profile
+          </button>
+
+          <!-- Scrollable profile list -->
+          <p class="field-label mb-1">Profiles</p>
+          <div
+            id="profile-list"
+            class="profile-list-box"
+            role="listbox"
+            aria-label="Profile list"
+          >
+            <p class="empty-state">Loading profiles&hellip;</p>
+          </div>
+
+        </div><!-- /.sn-panel -->
+      </div><!-- /col left -->
+
+      <!-- ============================================================
+           CENTER PANEL: Profile Information
+           ============================================================ -->
+      <div class="col-12 col-md-5">
+        <div class="sn-panel">
+          <h2 class="panel-title">
+            <i class="bi bi-person-badge-fill" aria-hidden="true"></i>
+            Profile Information
+          </h2>
+
+          <!-- Profile picture + name + status badge -->
+          <div class="profile-hero text-center mb-3">
+            <div class="profile-pic-wrap mx-auto">
+              <img
+                id="profile-pic"
+                src="resources/images/default.svg"
+                alt="Profile picture"
+                width="96"
+                height="96"
+                onerror="this.onerror=null; this.src='resources/images/default.svg'"
+              >
+            </div>
+            <h3 id="profile-name" class="profile-hero-name mt-3 mb-1">No Profile Selected</h3>
+            <span id="profile-status" class="profile-status-badge" aria-label="Current status">&mdash;</span>
+          </div>
+
+          <!-- Favorite quote -->
+          <div class="sn-info-block mb-2">
+            <p class="info-label">
+              <i class="bi bi-quote" aria-hidden="true"></i> Favorite Quote
+            </p>
+            <blockquote id="profile-quote" class="profile-quote">&mdash;</blockquote>
+          </div>
+
+          <!-- Friends list -->
+          <div class="sn-info-block flex-grow-1">
+            <p class="info-label">
+              <i class="bi bi-people-fill" aria-hidden="true"></i> Friends
+            </p>
+            <div
+              id="friends-list"
+              class="friends-list-box"
+              role="list"
+              aria-label="Friends list"
+            >
+              <p class="empty-state">No profile selected.</p>
+            </div>
+          </div>
+
+        </div><!-- /.sn-panel -->
+      </div><!-- /col center -->
+
+      <!-- ============================================================
+           RIGHT PANEL: Edit Profile
+           ============================================================ -->
+      <div class="col-12 col-md-4">
+        <div class="sn-panel">
+          <h2 class="panel-title">
+            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+            Edit Profile
+          </h2>
+
+          <!-- Change Status -->
+          <div class="edit-section mb-3">
+            <label for="input-status" class="field-label">Change Status</label>
+            <div class="input-group input-group-sm">
+              <input
+                type="text"
+                id="input-status"
+                class="form-control sn-input"
+                placeholder="New status message"
+                aria-label="New status"
+              >
+              <button id="btn-status" class="btn sn-btn sn-btn-primary" aria-label="Apply status">
+                <i class="bi bi-check-lg" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Change Quote -->
+          <div class="edit-section mb-3">
+            <label for="input-quote" class="field-label">Change Quote</label>
+            <div class="input-group input-group-sm">
+              <input
+                type="text"
+                id="input-quote"
+                class="form-control sn-input"
+                placeholder="New favorite quote"
+                aria-label="New quote"
+              >
+              <button id="btn-quote" class="btn sn-btn sn-btn-secondary" aria-label="Apply quote">
+                <i class="bi bi-chat-quote-fill" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Change Picture -->
+          <div class="edit-section mb-3">
+            <label for="input-picture" class="field-label">Change Picture Path</label>
+            <div class="input-group input-group-sm">
+              <input
+                type="text"
+                id="input-picture"
+                class="form-control sn-input"
+                placeholder="e.g. resources/images/ada.png"
+                aria-label="New picture path"
+              >
+              <button id="btn-picture" class="btn sn-btn sn-btn-secondary" aria-label="Apply picture">
+                <i class="bi bi-image-fill" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <hr class="sn-divider">
+
+          <!-- Add Friend -->
+          <div class="edit-section mb-3">
+            <label for="input-friend" class="field-label">Add Friend</label>
+            <div class="input-group input-group-sm">
+              <input
+                type="text"
+                id="input-friend"
+                class="form-control sn-input"
+                placeholder="Friend's full name"
+                aria-label="Friend name to add"
+                autocomplete="off"
+              >
+              <button id="btn-add-friend" class="btn sn-btn sn-btn-success" aria-label="Add friend">
+                <i class="bi bi-person-check-fill" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remove Friend -->
+          <div class="edit-section mb-1">
+            <label for="input-remove-friend" class="field-label">Remove Friend</label>
+            <div class="input-group input-group-sm">
+              <input
+                type="text"
+                id="input-remove-friend"
+                class="form-control sn-input"
+                placeholder="Friend's full name"
+                aria-label="Friend name to remove"
+                autocomplete="off"
+              >
+              <button id="btn-remove-friend" class="btn sn-btn sn-btn-warning" aria-label="Remove friend">
+                <i class="bi bi-person-dash-fill" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /.sn-panel -->
+      </div><!-- /col right -->
+
+    </div><!-- /.row -->
+  </main>
+</div><!-- /#app-wrapper -->
+
+<!-- ===== STATUS BAR ===== -->
+<footer id="status-bar" role="status" aria-live="polite">
+  <i class="bi bi-circle-fill status-dot" id="status-dot" aria-hidden="true"></i>
+  <span id="status-message">Initializing&hellip;</span>
+</footer>
+
+<!-- Bootstrap JS bundle via CDN (Popper.js included) -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmg+i5P8FMkfQf+QBKYB8N1g7Kl"
+  crossorigin="anonymous"
+></script>
+
+<!-- Application logic (must come AFTER Bootstrap JS and Supabase CDN) -->
+<script src="js/app.js"></script>
+
+</body>
+</html>

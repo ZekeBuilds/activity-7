@@ -1,0 +1,16 @@
+# Lab documentation (not needed in repo)
+docs/
+
+# Claude Code local settings
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code workspace files
+.vscode/*.code-workspace
+
+# Node (if ever used locally)
+node_modules/

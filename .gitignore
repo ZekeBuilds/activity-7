@@ -1,6 +1,9 @@
 # Lab documentation (not needed in repo)
 docs/
 
+# Temporary copy-paste notes
+_temp/
+
 # Claude Code local settings
 .claude/
 

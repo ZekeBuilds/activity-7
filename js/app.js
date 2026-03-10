@@ -8,8 +8,8 @@
 // The `supabase` global is provided by the CDN script in index.html.
 const { createClient } = supabase
 
-const SUPABASE_URL            = 'https://YOUR-PROJECT-ID.supabase.co'
-const SUPABASE_PUBLISHABLE_KEY = 'YOUR-PUBLISHABLE-KEY'
+const SUPABASE_URL            = 'https://lngxhwcofrjgwftwuhcp.supabase.co'
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_CZgQ6fi_TKSsjFlYPuZYjQ_rGZ69_HY'
 
 const db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
 

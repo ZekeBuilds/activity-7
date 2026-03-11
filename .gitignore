@@ -5,6 +5,7 @@ docs/
 _temp/
 
 Part 1 Screenshots/
+Screenshots/
 
 # Claude
 .claude/
@@ -20,3 +21,5 @@ desktop.ini
 
 # Node (if ever used locally)
 node_modules/
+
+*.zip

@@ -562,7 +562,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ── Exit button ─────────────────────────────────────────────
   document.getElementById('btn-exit')
     .addEventListener('click', () => {
-      if (!window.close()) setStatus('To exit, close this browser tab.')
+      window.location.href = 'exit.html'
     })
 
   // ── Enter key shortcuts ─────────────────────────────────────
